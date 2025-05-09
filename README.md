@@ -23,49 +23,64 @@ To write a YACC program to recognize the grammar anb where n>=10.
 %}
 
 %%
-a    { return A; }  // Recognize 'a' as token A
-b    { return B; }  // Recognize 'b' as token B
-.    { return 0; }  // End of input
+a   { return A; }
+b   { return B; }
+\n  { return '\n'; }
+.   { return yytext[0]; }
 %%
 
 int yywrap() {
     return 1;
 }
+
+
 ```
 
 ## gammar.y:
 ```
 %{
 #include <stdio.h>
-int yylex(void);
-void yyerror(const char *s);
+#include <stdlib.h>
+int count = 0;  // to count number of a's
 %}
 
 %token A B
 
 %%
-S   : A A A A A A A A A A B    { printf("Valid string\n"); }
-    | A S B                    { printf("Valid string\n"); }
+start:
+    sequence B '\n' {
+        if (count >= 10) {
+            printf("Valid string: %d a's followed by b\n", count);
+        } else {
+            printf("Invalid: Less than 10 a's\n");
+        }
+        count = 0; // reset for next input
+    }
     ;
 
+sequence:
+    A { count++; }
+  | sequence A { count++; }
+  ;
 %%
 
 int main() {
-    printf("Enter a string:\n");
-    yyparse();
-    return 0;
+    printf("Enter a string (aⁿb where n >= 10):\n");
+    return yyparse();
 }
 
-void yyerror(const char *s) {
-    printf("Invalid string\n");
+void yyerror(const char *msg) {
+    printf("Syntax error: %s\n", msg);
 }
+
+
 ```
 
 
 
 # OUTPUT
 
-![image](https://github.com/user-attachments/assets/2b9fb1c9-5172-4570-82e8-83ea7f9f4ba4)
+![image](https://github.com/user-attachments/assets/126da004-7193-486e-a43b-cd7b4daf4b6a)
 
 # RESULT
 The YACC program to recognize the grammar anb where n>=10 is executed successfully and the output is verified.
