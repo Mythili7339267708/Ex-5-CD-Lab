@@ -36,7 +36,7 @@ int yywrap() {
 
 ```
 
-## gammar.y:
+## grammar.y:
 ```
 %{
 #include <stdio.h>
